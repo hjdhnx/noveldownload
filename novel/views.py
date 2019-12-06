@@ -61,8 +61,8 @@ def edit_action(request):
         t1 = time()
         name, _, _, novel_list = getAll(url=novelindex)
         cwd = os.getcwd()+"/novel/"
-        if not os.path.exists("novel/downloads/" + name):
-            os.mkdir("novel/downloads/" + name)
+        if not os.path.exists(f"{cwd}downloads/" + name):
+            os.mkdir(f"{cwd}downloads/" + name)
         runApp(novel_list, name,t1,cwd)
         return HttpResponse(f"it's ok<br>{name} {author} {noveltype}<br><a href='/novel/download/?name={name}.txt'>大约等三分钟点击下载</a>")
     else:
