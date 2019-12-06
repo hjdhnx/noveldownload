@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load staticfiles %}
+    <link rel="shortcut icon" href="{% static 'img/logo.ico' %}">
+    <title>Title</title>
+</head>
+<body>
+<h1>小说区域</h1>
+<h3>下面区域用于取出文章</h3>
+<br><br><br>
+<a href="{% url 'novel:novel_edit' %}">新建下载页面</a>
+</body>
+</html>

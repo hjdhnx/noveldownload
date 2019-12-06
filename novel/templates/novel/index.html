@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load staticfiles %}
+    <link rel="shortcut icon" href="{% static 'img/logo.ico' %}">
+
+    <title>我的第一个页面</title>
+</head>
+<body>
+<h1>hello noveldownoad!</h1>
+<br>
+<a href="{% url 'novel:novel_list' %}">进入下载页面</a>
+</body>
+</html>
