@@ -3,6 +3,50 @@ import requests
 from threading import Thread,enumerate
 import os
 from time import sleep,time
+import execjs
+import urllib.parse
+import json
+
+def encodeURI(URIstring,encoding='gbk'):
+    encode_text = URIstring.encode(encoding)
+    encode_text = urllib.parse.quote(encode_text)
+    return encode_text
+
+def decodeURI(URIstring,encoding='gbk'):
+    encode_text = urllib.parse.unquote(URIstring,encoding)
+    return encode_text
+
+def search_novel(name="万古杀帝"):
+    url = "https://www.bookbao8.com/Search/q_"
+    name_encode = execjs.eval(f"encodeURIComponent(escape('{name}'))")
+    seach_link = url + name_encode
+    return seach_link
+
+def url_encode(unicode_text="万古杀帝"):
+    data = {
+    'data': unicode_text,
+    'type': 'urlencode',
+    'arg': 's=gb2312_j=0_t=0'
+    }
+    r = requests.post('http://web.chacuo.net/charseturlencode',data=data)
+    encode_text = ''
+    if r.status_code == requests.codes.ok:
+        json_text = json.loads(r.text)
+        encode_text = json_text['data'][0]
+    return encode_text
+def getIndexUrl(name='万古杀帝'):
+    r = requests.get(search_novel(name),headers=headers)
+    if r.status_code == requests.codes.ok:
+        r.encoding = r.apparent_encoding
+        page_source = etree.HTML(r.text)
+        href = page_source.xpath('/html/body/div[6]/div[1]/div[3]/ul/li/div[2]/span/a/@href')
+        href = map(lambda x:f'https://www.bookbao8.com{x}',href)
+        name = page_source.xpath('/html/body/div[6]/div[1]/div[3]/ul/li/div[2]/span/a/span/text()')
+        novels = list(zip(name,href))
+        return novels
+    else:
+        return []
+
 
 headers={
 # ':authority':'www.bookbao8.com',
@@ -29,7 +73,7 @@ def thread_it(func,*args):
 
 def getAll(url = "https://www.bookbao8.com/book/201506/04/id_XNDMyMjA1.html"):
     r = requests.get(url,headers=headers)
-    print(r.text)
+    # print(r.text)
     if r.status_code == 200:
         r.encoding = r.apparent_encoding
         ret = r.text
@@ -115,13 +159,21 @@ def hebing(path):
             f.write(f1.read())
     f.close()
     print("小说合并完成")
-
-if __name__ == '__main__':
+def main(novel_name = "万古杀帝"):
     t1 = time()
-    name, _, _, novel_list = getAll(url="https://www.bookbao8.com/book/201506/04/id_XNDMyMjA1.html")
+    novel_url = getIndexUrl(novel_name)
+    if len(novel_url) >= 0:
+        url = novel_url[0][1]
+    else:
+        url = "https://www.bookbao8.com/book/201506/04/id_XNDMyMjA1.html"
+    name, _, _, novel_list = getAll(url)
     print(name)
     if not os.path.exists("downloads/" + name):
         os.mkdir("downloads/" + name)
     runApp(novel_list, name, t1)
+
+
+if __name__ == '__main__':
+    main('万古杀帝')
     while True:
         pass
